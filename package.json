@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "typecheck": "pnpm -r exec tsc --noEmit",
     "dev:placeholder": "pnpm --filter project-placeholder dev",
+    "deploy:placeholder": "pnpm --filter project-placeholder deploy",
     "dev:email-reject": "pnpm --filter email-catch-all-reject dev",
-    "typecheck": "pnpm -r exec tsc --noEmit"
+    "deploy:email-reject": "pnpm --filter email-catch-all-reject deploy",
+    "deploy:all": "pnpm -r deploy"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250224.0",

@@ -1,0 +1,116 @@
+name: CI / CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Typecheck
+        run: pnpm typecheck
+
+  filter-changes:
+    name: Filter Changed Workers
+    needs: typecheck
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      placeholder: ${{ steps.filter.outputs.placeholder }}
+      email_reject: ${{ steps.filter.outputs.email_reject }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect Changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            placeholder:
+              - 'workers/project-placeholder/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'tsconfig.base.json'
+            email_reject:
+              - 'workers/email-catch-all-reject/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'tsconfig.base.json'
+
+  deploy-placeholder:
+    name: Deploy project-placeholder
+    needs: filter-changes
+    if: needs.filter-changes.outputs.placeholder == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy Worker to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 'workers/project-placeholder'
+
+  deploy-email-reject:
+    name: Deploy email-catch-all-reject
+    needs: filter-changes
+    if: needs.filter-changes.outputs.email_reject == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Deploy Worker to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: 'workers/email-catch-all-reject'
