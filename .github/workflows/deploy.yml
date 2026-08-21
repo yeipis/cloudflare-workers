@@ -7,6 +7,17 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      worker:
+        description: 'Worker to deploy (choose "all" or a specific worker)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - 'all'
+          - 'project-placeholder'
+          - 'email-catch-all-reject'
 
 jobs:
   typecheck:
@@ -34,16 +45,17 @@ jobs:
   filter-changes:
     name: Filter Changed Workers
     needs: typecheck
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     outputs:
-      placeholder: ${{ steps.filter.outputs.placeholder }}
-      email_reject: ${{ steps.filter.outputs.email_reject }}
+      placeholder: ${{ github.event_name == 'workflow_dispatch' && (inputs.worker == 'all' || inputs.worker == 'project-placeholder') || steps.filter.outputs.placeholder == 'true' }}
+      email_reject: ${{ github.event_name == 'workflow_dispatch' && (inputs.worker == 'all' || inputs.worker == 'email-catch-all-reject') || steps.filter.outputs.email_reject == 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Detect Changes
+        if: github.event_name == 'push'
         id: filter
         uses: dorny/paths-filter@v3
         with:
