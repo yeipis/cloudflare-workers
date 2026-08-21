@@ -2,5 +2,6 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "email-catch-all-reject",
   "main": "src/index.ts",
-  "compatibility_date": "2024-09-23"
+  "compatibility_date": "2024-09-23",
+  "workers_dev": false
 }

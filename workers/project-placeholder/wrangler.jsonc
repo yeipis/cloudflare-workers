@@ -3,6 +3,7 @@
   "name": "project-placeholder",
   "main": "src/index.ts",
   "compatibility_date": "2024-09-23",
+  "workers_dev": false,
   "routes": [
     { "pattern": "poketools.yeipi.dev/*", "zone_name": "yeipi.dev" },
     { "pattern": "greenfleet.yeipi.dev/*", "zone_name": "yeipi.dev" },
