@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev:placeholder": "pnpm --filter project-in-progress-placeholder dev",
+    "dev:placeholder": "pnpm --filter project-placeholder dev",
     "dev:email-reject": "pnpm --filter email-catch-all-reject dev",
     "typecheck": "pnpm -r exec tsc --noEmit"
   },
