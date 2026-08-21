@@ -81,6 +81,7 @@ Workers can define custom subdomain routes directly in their `wrangler.jsonc` (I
 ```jsonc
 {
   "name": "project-placeholder",
+  "workers_dev": false,
   "routes": [
     { "pattern": "poketools.yeipi.dev/*", "zone_name": "yeipi.dev" },
     { "pattern": "greenfleet.yeipi.dev/*", "zone_name": "yeipi.dev" },
@@ -97,6 +98,11 @@ The repository includes an automated workflow at `.github/workflows/deploy.yml`:
 
 1. **Pull Requests & Pushes**: Automatically executes `pnpm typecheck` to prevent regressions.
 2. **Push to `main`**: Uses `paths-filter` to detect which worker directories have changed and only deploys the affected workers to Cloudflare.
+3. **Manual Trigger (`workflow_dispatch`)**: Trigger on-demand deployments directly from the GitHub web interface:
+   - Navigate to the **Actions** tab in your GitHub repository.
+   - Select the **CI / CD** workflow in the left sidebar.
+   - Click the **Run workflow** dropdown button on the right.
+   - Select which worker to deploy (`all`, `project-placeholder`, or `email-catch-all-reject`) and click **Run workflow**.
 
 ### 🔑 Required GitHub Secrets
 
