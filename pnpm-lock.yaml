@@ -18,6 +18,8 @@ importers:
         specifier: ^3.109.2
         version: 3.114.17(@cloudflare/workers-types@4.20260702.1)
 
+  workers/email-catch-all-reject: {}
+
   workers/project-placeholder: {}
 
 packages:
