@@ -2,6 +2,7 @@
   "name": "cloudflare-workers-monorepo",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "typecheck": "pnpm -r exec tsc --noEmit",
     "dev:placeholder": "pnpm --filter project-placeholder dev",
